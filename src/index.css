@@ -3,8 +3,6 @@
   line-height: 1.5;
   font-weight: 400;
 
-  overflow: hidden;
-
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
@@ -17,11 +15,10 @@
 }
 
 body {
-  display: flex;
   margin: 0;
-  min-height: 100vh;
-  min-width: 320px;
-  place-content: center;
-  place-items: center;
-  overflow: hidden;
+}
+
+main {
+  overflow: auto;
+  height: 100vh;
 }

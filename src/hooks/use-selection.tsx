@@ -7,11 +7,14 @@ interface IArea {
   height: number;
 }
 
-export const useSelection = () => {
-  // States
+interface IProps {
+  borderWidth?: number;
+  scale?: number;
+}
+
+export const useSelection = ({ borderWidth = 2, scale = 1 }: IProps) => {
   const [handling, setHandling] = useState(false);
 
-  // Refs
   const initp = useRef({ x: 0, y: 0 });
   const ref = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -106,26 +109,39 @@ export const useSelection = () => {
         const top = Math.min(initp.current.y, Y);
 
         areaRef.current = {
-          x: left,
-          y: left,
-          width: width,
-          height: height,
+          x: left / scale,
+          y: top / scale,
+          width: width / scale,
+          height: height / scale,
         };
 
         elementRef.style.position = "relative";
-        overlayRef.style.userSelect = "none";
+        elementRef.style.height = "fit-content";
+        elementRef.style.width = "fit-content";
         overlayRef.style.position = "absolute";
-        overlayRef.style.backgroundColor = "rgba(0, 0, 0, 0.2)";
+        overlayRef.style.userSelect = "none";
+        overlayRef.style.backgroundColor = "rgba(51, 130, 255, 0.2)";
+        overlayRef.style.border = `${borderWidth}px solid #3382ff`;
         overlayRef.style.height = `${height}px`;
         overlayRef.style.width = `${width}px`;
-        overlayRef.style.left = `${left}px`;
-        overlayRef.style.top = `${top}px`;
+        overlayRef.style.left = `${left - borderWidth}px`;
+        overlayRef.style.top = `${top - borderWidth}px`;
       }
     };
 
     const mouseup = () => {
       setHandling(false);
     };
+
+    const overlayRef = selectionRef.current;
+    const m = areaRef.current;
+
+    if (overlayRef && m) {
+      overlayRef.style.height = `${m.height * scale}px`;
+      overlayRef.style.width = `${m.width * scale}px`;
+      overlayRef.style.left = `${m.x * scale - borderWidth}px`;
+      overlayRef.style.top = `${m.y * scale - borderWidth}px`;
+    }
 
     window.addEventListener("mousemove", mousemove);
     window.addEventListener("mousedown", mousedown);
@@ -136,7 +152,7 @@ export const useSelection = () => {
       window.removeEventListener("mousedown", mousedown);
       window.removeEventListener("mouseup", mouseup);
     };
-  }, [handling]);
+  }, [borderWidth, scale, handling]);
 
   return {
     ref,
